@@ -1,15 +1,110 @@
--- Script para capturar os RemoteEvents usados no jogo
+-- 📦 Serviços
+local rs = game:GetService("ReplicatedStorage")
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+-- 🔁 RemoteEvents
+local valueUpdated = rs:WaitForChild("ValueUpdated")
+local rebirth = rs:WaitForChild("Rebirth")
 
--- Função que conecta em todos os RemoteEvents e imprime quando forem acionados
-for _, obj in pairs(ReplicatedStorage:GetChildren()) do
-    if obj:IsA("RemoteEvent") then
-        obj.OnClientEvent:Connect(function(...)
-            print("[RemoteEvent Disparado] Nome:", obj.Name, "Args:", ...)
-        end)
-    elseif obj:IsA("RemoteFunction") then
-        -- Caso queira monitorar RemoteFunctions também
-        print("[RemoteFunction encontrado] Nome:", obj.Name)
+-- ⚙️ Configuração
+local multiplicador = 1000
+local autoCultivar = false
+local autoRebirth = false
+local autoBreakthrough = false
+
+-- 🖼️ Criar GUI
+local screengui = Instance.new("ScreenGui", game.CoreGui)
+screengui.Name = "ModMenuCultivation"
+
+local frame = Instance.new("Frame", screengui)
+frame.Size = UDim2.new(0, 200, 0, 190)
+frame.Position = UDim2.new(0, 30, 0, 100)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
+
+-- 🔘 Botão 1: Cultivar
+local btn1 = Instance.new("TextButton", frame)
+btn1.Size = UDim2.new(1, -20, 0, 35)
+btn1.Position = UDim2.new(0, 10, 0, 10)
+btn1.Text = "🧪 Auto Cultivar [OFF]"
+btn1.TextColor3 = Color3.new(1,1,1)
+btn1.BackgroundColor3 = Color3.fromRGB(40,40,40)
+Instance.new("UICorner", btn1)
+
+btn1.MouseButton1Click:Connect(function()
+    autoCultivar = not autoCultivar
+    btn1.Text = autoCultivar and "🧪 Auto Cultivar [ON]" or "🧪 Auto Cultivar [OFF]"
+end)
+
+-- 🔘 Botão 2: Renascer
+local btn2 = Instance.new("TextButton", frame)
+btn2.Size = UDim2.new(1, -20, 0, 35)
+btn2.Position = UDim2.new(0, 10, 0, 50)
+btn2.Text = "🔁 Auto Renascer [OFF]"
+btn2.TextColor3 = Color3.new(1,1,1)
+btn2.BackgroundColor3 = Color3.fromRGB(40,40,40)
+Instance.new("UICorner", btn2)
+
+btn2.MouseButton1Click:Connect(function()
+    autoRebirth = not autoRebirth
+    btn2.Text = autoRebirth and "🔁 Auto Renascer [ON]" or "🔁 Auto Renascer [OFF]"
+end)
+
+-- 🔘 Botão 3: Breakthrough
+local btn3 = Instance.new("TextButton", frame)
+btn3.Size = UDim2.new(1, -20, 0, 35)
+btn3.Position = UDim2.new(0, 10, 0, 90)
+btn3.Text = "💥 Auto Breakthrough [OFF]"
+btn3.TextColor3 = Color3.new(1,1,1)
+btn3.BackgroundColor3 = Color3.fromRGB(40,40,40)
+Instance.new("UICorner", btn3)
+
+btn3.MouseButton1Click:Connect(function()
+    autoBreakthrough = not autoBreakthrough
+    btn3.Text = autoBreakthrough and "💥 Auto Breakthrough [ON]" or "💥 Auto Breakthrough [OFF]"
+end)
+
+-- ❌ Botão 4: Fechar menu
+local btn4 = Instance.new("TextButton", frame)
+btn4.Size = UDim2.new(1, -20, 0, 30)
+btn4.Position = UDim2.new(0, 10, 0, 135)
+btn4.Text = "❌ Fechar"
+btn4.TextColor3 = Color3.new(1,1,1)
+btn4.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
+Instance.new("UICorner", btn4)
+
+btn4.MouseButton1Click:Connect(function()
+    screengui:Destroy()
+end)
+
+-- 🔄 Loop automático
+spawn(function()
+    while true do
+        if autoCultivar then
+            for i = 1, multiplicador do
+                valueUpdated:FireServer("rp", 26, 4)
+                valueUpdated:FireServer("essence", 0, 100)
+                valueUpdated:FireServer("realm", "Mortal III") -- Ajuste se necessário
+                valueUpdated:FireServer("affinitymulti", 1)
+            end
+        end
+
+        if autoRebirth then
+            for i = 1, multiplicador do
+                rebirth:FireServer()
+            end
+        end
+
+        if autoBreakthrough then
+            for i = 1, multiplicador do
+                valueUpdated:FireServer("essence", 4, 5, 100) -- Baseado nos prints
+                valueUpdated:FireServer("realm", "Mortal III")
+            end
+        end
+
+        wait(2) -- Delay entre execuções
     end
-end
+end)
