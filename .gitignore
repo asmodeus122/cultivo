@@ -1,35 +1,96 @@
 --[[
-    📜 Script: Auto Cultivation & Auto Rebirth
-    📌 Jogo: Old Eternal Cultivation (Roblox)
-    🛠️ Funções: 
-        - Cultivar automaticamente
-        - Renascer automaticamente
-        - Tentativa de multiplicar RP ganhos
-    ⚠️ Requer executor compatível (Synapse X, Delta, Fluxus)
-    ❗ Substitua os nomes dos RemoteEvents se necessário
+    🔥 OLD ETERNAL CULTIVATION - MOD MENU
+    📦 Funções: Auto Cultivation x100, Auto Rebirth, RP Boost
+    🖱️ Menu com botões (on/off)
+    🛠️ Criado para executores como Synapse X, Delta, Fluxus (mobile)
+    ❗ Ajuste os nomes dos RemoteEvents abaixo se necessário
 --]]
 
+-- Nomes dos RemoteEvents usados no jogo
+local REMOTE_CULTIVATE = "Cultivate"  -- 🧘‍♂️ Cultivação
+local REMOTE_REBIRTH = "Rebirth"      -- 🔁 Renascimento
+local REMOTE_RP = "GainRP"            -- 💥 Ganhar RP (Rebirth Points)
+
+-- Roblox Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Remote = ReplicatedStorage:WaitForChild("RemoteEvent") -- 🔁 Substitua por nome real se necessário
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
-local delayTime = 2 -- Delay entre ações
+-- Procurar o RemoteEvent (nome genérico usado por muitos jogos)
+local Remote = ReplicatedStorage:FindFirstChild("RemoteEvent") -- Altere se o nome real for diferente
 
--- Auto Cultivation + Rebirth
-while true do
-    task.wait(delayTime)
+-- Variáveis de controle
+local autoCultivate = false
+local autoRebirth = false
+local multiRP = false
 
-    -- Cultivate
-    pcall(function()
-        Remote:FireServer("Cultivate") -- 🧘‍♂️ Substitua por nome correto se diferente
-    end)
+-- Criar GUI
+local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+ScreenGui.Name = "ModMenu"
 
-    -- Rebirth
-    pcall(function()
-        Remote:FireServer("Rebirth") -- 🔁 Substitua por nome correto se diferente
-    end)
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 220, 0, 210)
+Frame.Position = UDim2.new(0, 50, 0, 50)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Frame.BorderSizePixel = 0
+Frame.Active = true
+Frame.Draggable = true -- permite arrastar o menu
 
-    -- Tentativa de ganhar RP multiplicado
-    pcall(function()
-        Remote:FireServer("GainRP", 9999) -- 💥 Tentativa (pode não funcionar)
-    end)
+-- Criar botões
+local function createButton(name, text, yPos, callback)
+    local btn = Instance.new("TextButton", Frame)
+    btn.Name = name
+    btn.Text = text
+    btn.Size = UDim2.new(1, -10, 0, 40)
+    btn.Position = UDim2.new(0, 5, 0, yPos)
+    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.SourceSansBold
+    btn.TextSize = 16
+    btn.MouseButton1Click:Connect(callback)
 end
+
+-- Botão: Auto Cultivation
+createButton("CultivateBtn", "🧘 Auto Cultivation", 5, function()
+    autoCultivate = not autoCultivate
+end)
+
+-- Botão: Auto Rebirth
+createButton("RebirthBtn", "🔁 Auto Rebirth", 55, function()
+    autoRebirth = not autoRebirth
+end)
+
+-- Botão: RP x100
+createButton("RPBtn", "💥 RP x100", 105, function()
+    multiRP = not multiRP
+end)
+
+-- Botão: Fechar Menu
+createButton("CloseBtn", "❌ Fechar Menu", 155, function()
+    ScreenGui:Destroy()
+end)
+
+-- LOOP de execução
+task.spawn(function()
+    while true do
+        task.wait(1)
+
+        if autoCultivate then
+            pcall(function()
+                Remote:FireServer(REMOTE_CULTIVATE, 100000) -- Cultivar com valor alto
+            end)
+        end
+
+        if autoRebirth then
+            pcall(function()
+                Remote:FireServer(REMOTE_REBIRTH)
+            end)
+        end
+
+        if multiRP then
+            pcall(function()
+                Remote:FireServer(REMOTE_RP, 99999) -- Tenta multiplicar RP
+            end)
+        end
+    end
+end)
