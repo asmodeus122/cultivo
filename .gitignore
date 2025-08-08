@@ -1,110 +1,105 @@
--- 📦 Serviços
-local rs = game:GetService("ReplicatedStorage")
+-- 🧠 Substitua pelos nomes reais após usar o hook (__namecall)
+local RemoteNames = {
+    Cultivate = "Cultivate",               -- exemplo
+    Breakthrough = "BreakthroughAttempt",  -- exemplo
+    RP = "GiveRP",                         -- exemplo
+    Rebirth = "Rebirth"                    -- <== nome do Remote para renascer
+}
 
--- 🔁 RemoteEvents
-local valueUpdated = rs:WaitForChild("ValueUpdated")
-local rebirth = rs:WaitForChild("Rebirth")
-
--- ⚙️ Configuração
-local multiplicador = 1000
-local autoCultivar = false
-local autoRebirth = false
+-- 🔄 Flags de ativação
+local autoCultivate = false
 local autoBreakthrough = false
+local autoRP = false
+local autoRebirth = false
 
--- 🖼️ Criar GUI
-local screengui = Instance.new("ScreenGui", game.CoreGui)
-screengui.Name = "ModMenuCultivation"
-
-local frame = Instance.new("Frame", screengui)
-frame.Size = UDim2.new(0, 200, 0, 190)
-frame.Position = UDim2.new(0, 30, 0, 100)
-frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-frame.BorderSizePixel = 0
-frame.Active = true
-frame.Draggable = true
-
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
-
--- 🔘 Botão 1: Cultivar
-local btn1 = Instance.new("TextButton", frame)
-btn1.Size = UDim2.new(1, -20, 0, 35)
-btn1.Position = UDim2.new(0, 10, 0, 10)
-btn1.Text = "🧪 Auto Cultivar [OFF]"
-btn1.TextColor3 = Color3.new(1,1,1)
-btn1.BackgroundColor3 = Color3.fromRGB(40,40,40)
-Instance.new("UICorner", btn1)
-
-btn1.MouseButton1Click:Connect(function()
-    autoCultivar = not autoCultivar
-    btn1.Text = autoCultivar and "🧪 Auto Cultivar [ON]" or "🧪 Auto Cultivar [OFF]"
-end)
-
--- 🔘 Botão 2: Renascer
-local btn2 = Instance.new("TextButton", frame)
-btn2.Size = UDim2.new(1, -20, 0, 35)
-btn2.Position = UDim2.new(0, 10, 0, 50)
-btn2.Text = "🔁 Auto Renascer [OFF]"
-btn2.TextColor3 = Color3.new(1,1,1)
-btn2.BackgroundColor3 = Color3.fromRGB(40,40,40)
-Instance.new("UICorner", btn2)
-
-btn2.MouseButton1Click:Connect(function()
-    autoRebirth = not autoRebirth
-    btn2.Text = autoRebirth and "🔁 Auto Renascer [ON]" or "🔁 Auto Renascer [OFF]"
-end)
-
--- 🔘 Botão 3: Breakthrough
-local btn3 = Instance.new("TextButton", frame)
-btn3.Size = UDim2.new(1, -20, 0, 35)
-btn3.Position = UDim2.new(0, 10, 0, 90)
-btn3.Text = "💥 Auto Breakthrough [OFF]"
-btn3.TextColor3 = Color3.new(1,1,1)
-btn3.BackgroundColor3 = Color3.fromRGB(40,40,40)
-Instance.new("UICorner", btn3)
-
-btn3.MouseButton1Click:Connect(function()
-    autoBreakthrough = not autoBreakthrough
-    btn3.Text = autoBreakthrough and "💥 Auto Breakthrough [ON]" or "💥 Auto Breakthrough [OFF]"
-end)
-
--- ❌ Botão 4: Fechar menu
-local btn4 = Instance.new("TextButton", frame)
-btn4.Size = UDim2.new(1, -20, 0, 30)
-btn4.Position = UDim2.new(0, 10, 0, 135)
-btn4.Text = "❌ Fechar"
-btn4.TextColor3 = Color3.new(1,1,1)
-btn4.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
-Instance.new("UICorner", btn4)
-
-btn4.MouseButton1Click:Connect(function()
-    screengui:Destroy()
-end)
-
--- 🔄 Loop automático
-spawn(function()
+-- 🔁 Loop: Auto Cultivar
+task.spawn(function()
     while true do
-        if autoCultivar then
-            for i = 1, multiplicador do
-                valueUpdated:FireServer("rp", 26, 4)
-                valueUpdated:FireServer("essence", 0, 100)
-                valueUpdated:FireServer("realm", "Mortal III") -- Ajuste se necessário
-                valueUpdated:FireServer("affinitymulti", 1)
-            end
+        if autoCultivate then
+            pcall(function()
+                game.ReplicatedStorage:WaitForChild(RemoteNames.Cultivate):FireServer()
+            end)
         end
-
-        if autoRebirth then
-            for i = 1, multiplicador do
-                rebirth:FireServer()
-            end
-        end
-
-        if autoBreakthrough then
-            for i = 1, multiplicador do
-                valueUpdated:FireServer("essence", 4, 5, 100) -- Baseado nos prints
-                valueUpdated:FireServer("realm", "Mortal III")
-            end
-        end
-
-        wait(2) -- Delay entre execuções
+        task.wait(1)
     end
+end)
+
+-- 🔁 Loop: Auto Breakthrough
+task.spawn(function()
+    while true do
+        if autoBreakthrough then
+            pcall(function()
+                game.ReplicatedStorage:WaitForChild(RemoteNames.Breakthrough):FireServer()
+            end)
+        end
+        task.wait(3)
+    end
+end)
+
+-- 🔁 Loop: Auto RP
+task.spawn(function()
+    while true do
+        if autoRP then
+            pcall(function()
+                game.ReplicatedStorage:WaitForChild(RemoteNames.RP):FireServer(1000)
+            end)
+        end
+        task.wait(1.5)
+    end
+end)
+
+-- 🔁 Loop: Auto Renascer
+task.spawn(function()
+    while true do
+        if autoRebirth then
+            pcall(function()
+                game.ReplicatedStorage:WaitForChild(RemoteNames.Rebirth):FireServer()
+            end)
+        end
+        task.wait(5) -- tempo maior por segurança
+    end
+end)
+
+-- 🧱 Mod Menu (Drawing API)
+local function CreateToggle(text, position, callback)
+    local button = Drawing.new("Text")
+    button.Text = "[ OFF ] " .. text
+    button.Position = position
+    button.Size = 20
+    button.Color = Color3.fromRGB(255, 255, 255)
+    button.Center = false
+    button.Outline = true
+    button.Visible = true
+
+    local state = false
+
+    game:GetService("UserInputService").InputBegan:Connect(function(input, gpe)
+        if gpe then return end
+        local mouse = game:GetService("UserInputService"):GetMouseLocation()
+        local x, y = mouse.X, mouse.Y
+        if x >= position.X and x <= position.X + 150 and y >= position.Y and y <= position.Y + 20 then
+            state = not state
+            button.Text = state and "[ ON  ] " .. text or "[ OFF ] " .. text
+            callback(state)
+        end
+    end)
+
+    return button
+end
+
+-- ☑️ Criar os botões
+CreateToggle("Auto Cultivar", Vector2.new(100, 100), function(state)
+    autoCultivate = state
+end)
+
+CreateToggle("Auto Breakthrough", Vector2.new(100, 130), function(state)
+    autoBreakthrough = state
+end)
+
+CreateToggle("Auto RP 1000x", Vector2.new(100, 160), function(state)
+    autoRP = state
+end)
+
+CreateToggle("Auto Rebirth", Vector2.new(100, 190), function(state)
+    autoRebirth = state
 end)
