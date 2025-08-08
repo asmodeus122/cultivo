@@ -1,41 +1,35 @@
-# Compiled Lua sources
-luac.out
+--[[
+    📜 Script: Auto Cultivation & Auto Rebirth
+    📌 Jogo: Old Eternal Cultivation (Roblox)
+    🛠️ Funções: 
+        - Cultivar automaticamente
+        - Renascer automaticamente
+        - Tentativa de multiplicar RP ganhos
+    ⚠️ Requer executor compatível (Synapse X, Delta, Fluxus)
+    ❗ Substitua os nomes dos RemoteEvents se necessário
+--]]
 
-# luarocks build files
-*.src.rock
-*.zip
-*.tar.gz
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Remote = ReplicatedStorage:WaitForChild("RemoteEvent") -- 🔁 Substitua por nome real se necessário
 
-# Object files
-*.o
-*.os
-*.ko
-*.obj
-*.elf
+local delayTime = 2 -- Delay entre ações
 
-# Precompiled Headers
-*.gch
-*.pch
+-- Auto Cultivation + Rebirth
+while true do
+    task.wait(delayTime)
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-*.def
-*.exp
+    -- Cultivate
+    pcall(function()
+        Remote:FireServer("Cultivate") -- 🧘‍♂️ Substitua por nome correto se diferente
+    end)
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+    -- Rebirth
+    pcall(function()
+        Remote:FireServer("Rebirth") -- 🔁 Substitua por nome correto se diferente
+    end)
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
+    -- Tentativa de ganhar RP multiplicado
+    pcall(function()
+        Remote:FireServer("GainRP", 9999) -- 💥 Tentativa (pode não funcionar)
+    end)
+end
